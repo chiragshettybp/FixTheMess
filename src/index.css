@@ -1,0 +1,163 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYREGULAR.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYMEDIUM.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYBOLD.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 3%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 3%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --primary-glow: 217 91% 75%;
+
+    --secondary: 260 89% 76%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 215 20% 20%;
+    --muted-foreground: 215 10% 65%;
+
+    --accent: 215 20% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 60.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 215 20% 20%;
+    --input: 215 20% 15%;
+    --ring: 217 91% 60%;
+    
+    --warning: 36 100% 65%;
+    --success: 160 89% 60%;
+
+    /* Modern gradients */
+    --gradient-flow: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 50%, hsl(var(--secondary)) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--accent)) 100%);
+    --gradient-hero: radial-gradient(ellipse at center, hsl(var(--primary) / 0.15) 0%, transparent 70%);
+
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border selection:bg-primary/20 selection:text-white;
+  }
+  
+  html, body {
+    @apply scroll-smooth antialiased;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'SF Pro Display', sans-serif;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .glass-card {
+    @apply backdrop-blur-xl bg-white/[0.03] border border-white/10 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.3)];
+  }
+  
+  .neo-blur {
+    @apply backdrop-blur-2xl bg-black/40 border border-white/10;
+  }
+
+  .saas-card {
+    @apply backdrop-blur-sm bg-card/50 border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  .flowing-gradient {
+    background: var(--gradient-flow);
+  }
+
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .saas-section {
+    background: var(--gradient-subtle);
+  }
+}
+
+/* Animation Utility Classes */
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.story-link {
+  @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+}
+  
+.text-gradient {
+  @apply bg-gradient-to-br from-primary via-primary-glow to-secondary bg-clip-text text-transparent;
+}
+
+.text-gradient-secondary {
+  @apply bg-gradient-to-br from-secondary via-secondary/90 to-secondary/70 bg-clip-text text-transparent;
+}
+
+.saas-headline {
+  @apply text-4xl lg:text-6xl font-bold leading-tight;
+}
+
+.saas-subheading {
+  @apply text-lg lg:text-xl text-muted-foreground max-w-2xl;
+}
+
+.glow {
+  box-shadow: 0 0 15px 1px rgba(var(--color, 97, 218, 251), 0.2);
+}
+
+.glow-primary {
+  --color: 97, 218, 251;
+}
+
+.glow-secondary {
+  --color: 187, 134, 252;
+}
+
+.glow-warning {
+  --color: 255, 187, 100;
+}

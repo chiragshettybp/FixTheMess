@@ -59,7 +59,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/join" element={<Join />} />
+            <Route path="/" element={<Join />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/gov-auth" element={<GovAuth />} />
             <Route path="/gov-panel" element={
@@ -71,13 +71,6 @@ const App = () => (
               <GovProtectedRoute>
                 <GovResolve />
               </GovProtectedRoute>
-            } />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Home />
-                </AppLayout>
-              </ProtectedRoute>
             } />
             <Route path="/report" element={
               <ProtectedRoute>

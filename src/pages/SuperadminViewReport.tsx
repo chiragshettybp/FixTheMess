@@ -22,6 +22,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 
 import { toast } from 'sonner';
+import { BackButton } from '@/components/superadmin/BackButton';
 
 interface Report {
   id: string;
@@ -236,10 +237,7 @@ const SuperadminViewReport = () => {
           {/* Header */}
           <div className="mb-6">
             <div className="flex items-center gap-4 mb-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/superadmin/reports')}>
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Back to Reports
-              </Button>
+              <BackButton to="/superadmin/reports" />
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Link to="/superadmin" className="hover:text-foreground">SuperAdmin</Link>
                 <span>→</span>

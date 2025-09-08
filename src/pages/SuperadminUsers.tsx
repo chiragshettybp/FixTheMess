@@ -28,6 +28,7 @@ import { useAllUsers } from '@/hooks/useAllUsers';
 import { UserTable } from '@/components/superadmin/UserTable';
 import { UserPagination } from '@/components/superadmin/UserPagination';
 import { supabase } from '@/integrations/supabase/client';
+import { BackButton } from '@/components/superadmin/BackButton';
 
 const SuperadminUsers = () => {
   const { user, profile } = useAuth();
@@ -190,6 +191,7 @@ const SuperadminUsers = () => {
           <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Header */}
             <div className="flex flex-col gap-4">
+              <BackButton />
               <div className="space-y-2">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">User Management</h1>
                 <p className="text-sm sm:text-base text-muted-foreground">Manage all platform users</p>

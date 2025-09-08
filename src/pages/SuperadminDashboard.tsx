@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import SuperAdminPageHeader from '@/components/superadmin/SuperAdminPageHeader';
+import { BackButton } from '@/components/superadmin/BackButton';
 import { 
   Users, 
   FileText, 
@@ -265,6 +266,10 @@ const SuperadminDashboard = () => {
         refreshing={refreshing}
         alertsCount={alerts.length}
       />
+      
+      <div className="container mx-auto p-4 mb-4">
+        <BackButton to="/home" label="Back to App" />
+      </div>
 
       <div className="container mx-auto p-4 space-y-6 max-w-7xl">
         {error && (

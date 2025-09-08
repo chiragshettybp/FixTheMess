@@ -13,6 +13,7 @@ import { NotificationComposer } from '@/components/superadmin/NotificationCompos
 import { NotificationTable } from '@/components/superadmin/NotificationTable';
 import { NotificationFiltersPanel } from '@/components/superadmin/NotificationFiltersPanel';
 import { Send, Bell, Users, UserCheck, Shield } from 'lucide-react';
+import { BackButton } from '@/components/superadmin/BackButton';
 
 export interface SuperadminNotification {
   id: string;
@@ -242,6 +243,7 @@ const SuperadminNotifications = () => {
     <div className="min-h-screen bg-background">
       
       <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <BackButton className="mb-4" />
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
             <Bell className="h-8 w-8" />

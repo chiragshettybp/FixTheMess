@@ -8,6 +8,7 @@ import { ErrorLogsTable } from '@/components/superadmin/ErrorLogsTable';
 import { useSystemHealth } from '@/hooks/useSystemHealth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Activity } from 'lucide-react';
+import { BackButton } from '@/components/superadmin/BackButton';
 
 const SuperadminSystemHealth = () => {
   const { user, profile } = useAuth();
@@ -52,6 +53,7 @@ const SuperadminSystemHealth = () => {
           <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Header */}
             <div className="flex flex-col gap-4">
+              <BackButton />
               <div className="space-y-2">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-2">
                   <Activity className="h-8 w-8" />

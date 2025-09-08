@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, RefreshCw, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { BackButton } from '@/components/superadmin/BackButton';
 
 export default function SuperadminAppAnalytics() {
   const navigate = useNavigate();
@@ -54,6 +55,7 @@ export default function SuperadminAppAnalytics() {
     <div className="min-h-screen bg-background">
       
       <main className="container mx-auto px-4 py-6 space-y-8">
+        <BackButton className="mb-4" />
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-2">

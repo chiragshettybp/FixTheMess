@@ -19,6 +19,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 
 import { useToast } from '@/hooks/use-toast';
+import { BackButton } from '@/components/superadmin/BackButton';
 
 interface UserData {
   id: string;
@@ -302,14 +303,7 @@ const SuperadminEditUser = () => {
           <div className="w-full max-w-4xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => navigate('/superadmin/user')}
-                className="w-fit"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Users
-              </Button>
+              <BackButton to="/superadmin/users" />
               <div className="space-y-1">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Edit User</h1>
                 <p className="text-sm sm:text-base text-muted-foreground">Modify user details and permissions</p>

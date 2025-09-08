@@ -15,6 +15,7 @@ import { useGovernmentUserManagement, GovernmentUser } from '@/hooks/useGovernme
 import { useToast } from '@/hooks/use-toast';
 import { GovUserPagination } from '@/components/superadmin/GovUserPagination';
 import { supabase } from '@/integrations/supabase/client';
+import { BackButton } from '@/components/superadmin/BackButton';
 
 const SuperadminGovUsers = () => {
   const navigate = useNavigate();
@@ -273,6 +274,7 @@ const SuperadminGovUsers = () => {
     <div className="min-h-screen bg-background">
       
       <main className="container mx-auto px-4 py-8">
+        <BackButton className="mb-6" />
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>

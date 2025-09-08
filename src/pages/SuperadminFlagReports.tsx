@@ -12,6 +12,7 @@ import { useFlagReports, FlagReport } from '@/hooks/useFlagReports';
 import FlagReportCard, { FlagReportDetailModal } from '@/components/superadmin/FlagReportCard';
 
 import { useToast } from '@/hooks/use-toast';
+import { BackButton } from '@/components/superadmin/BackButton';
 
 const SuperadminFlagReports = () => {
   const navigate = useNavigate();
@@ -219,6 +220,7 @@ const SuperadminFlagReports = () => {
     <div className="min-h-screen bg-background">
       
       <main className="container mx-auto px-4 py-8">
+        <BackButton className="mb-6" />
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

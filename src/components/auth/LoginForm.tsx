@@ -60,8 +60,8 @@ export const LoginForm = ({
 
         // Wait for profile to be available, then redirect to home
         setTimeout(() => {
-          // Redirect to home page
-          window.location.href = '/home';
+          // Redirect to home page using React Router
+          navigate('/home');
         }, 100);
       }
     } catch (err) {

@@ -42,7 +42,7 @@ export const BottomNav = () => {
     {
       label: 'Home',
       icon: Home,
-      path: '/',
+      path: '/home',
       show: true,
     },
     {
@@ -90,8 +90,8 @@ export const BottomNav = () => {
   };
 
   const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === '/home') {
+      return location.pathname === '/home';
     }
     return location.pathname.startsWith(path);
   };

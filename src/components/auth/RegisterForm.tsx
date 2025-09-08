@@ -82,7 +82,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
         
         // Show success message and redirect
         setTimeout(() => {
-          navigate('/');
+          navigate('/home');
         }, 2000);
       }
     } catch (err) {

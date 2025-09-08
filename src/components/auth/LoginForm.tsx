@@ -58,10 +58,10 @@ export const LoginForm = ({
           description: "You have successfully logged in."
         });
 
-        // Wait for profile to be available, then redirect based on role
+        // Wait for profile to be available, then redirect to home
         setTimeout(() => {
-          // Redirect based on user role - give time for profile to load
-          window.location.href = '/'; // This will trigger ProtectedRoute logic
+          // Redirect to home page
+          window.location.href = '/home';
         }, 100);
       }
     } catch (err) {

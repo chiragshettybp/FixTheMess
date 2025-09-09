@@ -174,7 +174,10 @@ export const GovRegisterForm = ({ onSwitchToLogin }: GovRegisterFormProps) => {
         return;
       }
 
-      navigate('/gov-panel');
+      // Small delay to ensure profile is loaded before navigation
+      setTimeout(() => {
+        navigate('/gov-panel');
+      }, 100);
     } catch (err) {
       setError('An unexpected error occurred during registration');
     } finally {

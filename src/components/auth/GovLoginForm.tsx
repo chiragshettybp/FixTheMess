@@ -48,8 +48,10 @@ export const GovLoginForm = ({ onSwitchToRegister }: GovLoginFormProps) => {
         return;
       }
 
-      // Navigate to government panel after successful login
-      navigate('/gov-panel');
+      // Small delay to ensure profile is loaded before navigation
+      setTimeout(() => {
+        navigate('/gov-panel');
+      }, 100);
     } catch (err) {
       setError('An unexpected error occurred');
     } finally {

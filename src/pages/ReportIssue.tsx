@@ -237,6 +237,11 @@ const ReportIssue = () => {
 
     if (!ctx) return;
 
+    // Add haptic feedback on mobile
+    if ('vibrate' in navigator) {
+      navigator.vibrate(100);
+    }
+
     // Set canvas dimensions to video dimensions
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -571,48 +576,97 @@ const ReportIssue = () => {
               <div className="space-y-4">
                 <Label>Capture Photos *</Label>
                 
-                {/* Camera Interface */}
+                {/* Camera Interface - Full Screen on Mobile */}
                 {isCameraOpen ? (
-                  <Card className="border-2 border-primary">
-                    <CardContent className="p-4">
-                      <div className="relative">
-                        <video
-                          ref={videoRef}
-                          autoPlay
-                          playsInline
-                          muted
-                          className="w-full h-64 object-cover rounded-md bg-black"
-                        />
-                        <canvas ref={canvasRef} className="hidden" />
+                  <div className="fixed inset-0 z-50 bg-black lg:relative lg:z-auto lg:bg-transparent">
+                    {/* Mobile: Full screen camera */}
+                    <div className="lg:hidden relative h-full">
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="w-full h-full object-cover"
+                      />
+                      <canvas ref={canvasRef} className="hidden" />
+                      
+                      {/* Mobile Camera Controls */}
+                      <div className="absolute bottom-8 left-0 right-0">
+                        {/* Top row: Close button and counter */}
+                        <div className="flex justify-between items-center px-6 mb-8">
+                          <Button
+                            type="button"
+                            size="lg"
+                            variant="ghost"
+                            onClick={stopCamera}
+                            className="rounded-full w-12 h-12 bg-black/30 hover:bg-black/50 text-white border-white/20"
+                          >
+                            <X className="h-6 w-6" />
+                          </Button>
+                          <div className="bg-black/50 px-3 py-1 rounded-full">
+                            <p className="text-white text-sm font-medium">
+                              {3 - capturedPhotos.length} remaining
+                            </p>
+                          </div>
+                        </div>
                         
-                        {/* Camera Controls */}
-                        <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-4">
+                        {/* Bottom row: Capture button */}
+                        <div className="flex justify-center">
                           <Button
                             type="button"
                             size="lg"
                             onClick={capturePhoto}
-                            className="bg-red-500 hover:bg-red-600 text-white rounded-full w-16 h-16"
+                            className="bg-white hover:bg-gray-100 text-black rounded-full w-20 h-20 shadow-lg border-4 border-black/20"
                             disabled={capturedPhotos.length >= 3}
                           >
-                            <Camera className="h-6 w-6" />
-                          </Button>
-                          <Button
-                            type="button"
-                            size="lg"
-                            variant="outline"
-                            onClick={stopCamera}
-                            className="rounded-full w-16 h-16"
-                          >
-                            <X className="h-6 w-6" />
+                            <Camera className="h-8 w-8" />
                           </Button>
                         </div>
                       </div>
-                      
-                      <p className="text-xs text-center text-muted-foreground mt-2">
-                        Tap the red button to capture • {3 - capturedPhotos.length} photos remaining
-                      </p>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    
+                    {/* Desktop: Card layout */}
+                    <Card className="hidden lg:block border-2 border-primary">
+                      <CardContent className="p-4">
+                        <div className="relative">
+                          <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            muted
+                            className="w-full h-64 object-cover rounded-md bg-black"
+                          />
+                          <canvas ref={canvasRef} className="hidden" />
+                          
+                          {/* Desktop Camera Controls */}
+                          <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-4">
+                            <Button
+                              type="button"
+                              size="lg"
+                              onClick={capturePhoto}
+                              className="bg-red-500 hover:bg-red-600 text-white rounded-full w-16 h-16"
+                              disabled={capturedPhotos.length >= 3}
+                            >
+                              <Camera className="h-6 w-6" />
+                            </Button>
+                            <Button
+                              type="button"
+                              size="lg"
+                              variant="outline"
+                              onClick={stopCamera}
+                              className="rounded-full w-16 h-16"
+                            >
+                              <X className="h-6 w-6" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <p className="text-xs text-center text-muted-foreground mt-2">
+                          Tap the red button to capture • {3 - capturedPhotos.length} photos remaining
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
                 ) : (
                   /* Camera Launch & Upload Options */
                   <div className="space-y-3">

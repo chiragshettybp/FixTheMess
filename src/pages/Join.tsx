@@ -284,45 +284,37 @@ const Join = () => {
             
             <div className="space-y-12">
               {[{
-                step: "01",
-                icon: AlertTriangle,
-                title: "Spot the Issue",
-                description: "See a problem in your community? Take a photo, add details, and mark the location with our intuitive reporting interface."
-              }, {
-                step: "02", 
-                icon: Target,
-                title: "Smart Routing",
-                description: "Our AI automatically identifies the responsible authority and routes your report to the right department for fastest resolution."
-              }, {
-                step: "03",
-                icon: Clock,
-                title: "Real-Time Updates",
-                description: "Track progress with live notifications as your report moves through acknowledgment, investigation, and resolution phases."
-              }, {
-                step: "04",
-                icon: CheckCircle,
-                title: "Problem Solved",
-                description: "Get notified when the issue is resolved and rate the response quality to help improve community services."
-              }].map((item, index) => (
-                <motion.div 
-                  key={index} 
-                  initial={{
-                    opacity: 0,
-                    y: 30
-                  }} 
-                  whileInView={{
-                    opacity: 1,
-                    y: 0
-                  }} 
-                  transition={{
-                    duration: 0.6,
-                    delay: index * 0.2
-                  }} 
-                  viewport={{
-                    once: true
-                  }}
-                  className={`relative flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col md:gap-8 gap-4`}
-                >
+              step: "01",
+              icon: AlertTriangle,
+              title: "Spot the Issue",
+              description: "See a problem in your community? Take a photo, add details, and mark the location with our intuitive reporting interface."
+            }, {
+              step: "02",
+              icon: Target,
+              title: "Smart Routing",
+              description: "Our AI automatically identifies the responsible authority and routes your report to the right department for fastest resolution."
+            }, {
+              step: "03",
+              icon: Clock,
+              title: "Real-Time Updates",
+              description: "Track progress with live notifications as your report moves through acknowledgment, investigation, and resolution phases."
+            }, {
+              step: "04",
+              icon: CheckCircle,
+              title: "Problem Solved",
+              description: "Get notified when the issue is resolved and rate the response quality to help improve community services."
+            }].map((item, index) => <motion.div key={index} initial={{
+              opacity: 0,
+              y: 30
+            }} whileInView={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              duration: 0.6,
+              delay: index * 0.2
+            }} viewport={{
+              once: true
+            }} className={`relative flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col md:gap-8 gap-4`}>
                   {/* Content Card */}
                   <div className="flex-1">
                     <Card className="saas-card hover:scale-105 transition-transform duration-300">
@@ -346,8 +338,7 @@ const Join = () => {
 
                   {/* Spacer for alternating layout */}
                   <div className="flex-1 hidden md:block"></div>
-                </motion.div>
-              ))}
+                </motion.div>)}
             </div>
           </div>
         </div>
@@ -519,9 +510,7 @@ const Join = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={() => navigate('/auth')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg">
-                Start your free trial
-              </Button>
+              <Button size="lg" onClick={() => navigate('/auth')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg">Report Mess</Button>
               <Button variant="outline" size="lg" onClick={() => scrollToSection('features')} className="px-8 py-6 text-lg border-border/50">
                 More about our features <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -538,32 +527,17 @@ const Join = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs md:text-sm">
               <div className="flex items-center space-x-2">
                 <span>Built by</span>
-                <a 
-                  href="https://instagram.com/ichiragshetty" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="font-medium hover:text-primary transition-colors"
-                >
+                <a href="https://instagram.com/ichiragshetty" target="_blank" rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">
                   Chirag Shetty
                 </a>
               </div>
               <div className="hidden sm:block text-muted-foreground">•</div>
               <div className="flex items-center space-x-3">
-                <a 
-                  href="https://instagram.com/ichiragshetty" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
-                >
+                <a href="https://instagram.com/ichiragshetty" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                   @ichiragshetty
                 </a>
                 <span className="text-muted-foreground">•</span>
-                <a 
-                  href="https://github.com/chiragshettybp" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
-                >
+                <a href="https://github.com/chiragshettybp" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                   GitHub
                 </a>
               </div>

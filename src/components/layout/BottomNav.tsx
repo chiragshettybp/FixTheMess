@@ -75,7 +75,7 @@ export const BottomNav = () => {
       label: 'Admin',
       icon: Shield,
       path: '/admin',
-      show: profile?.role === 'admin' || profile?.role === 'superadmin',
+      show: profile?.role === 'admin',
     },
     {
       label: 'Super',

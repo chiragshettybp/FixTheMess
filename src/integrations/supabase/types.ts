@@ -53,13 +53,6 @@ export type Database = {
             referencedRelation: "reports"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "abuse_reports_report_id_fkey"
-            columns: ["report_id"]
-            isOneToOne: false
-            referencedRelation: "reports_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       actions_log: {
@@ -592,13 +585,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "report_attention_report_id_fkey"
-            columns: ["report_id"]
-            isOneToOne: true
-            referencedRelation: "reports_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "report_attention_resolved_by_fkey"
             columns: ["resolved_by"]
             isOneToOne: false
@@ -805,13 +791,6 @@ export type Database = {
             columns: ["report_id"]
             isOneToOne: false
             referencedRelation: "reports"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "share_logs_report_id_fkey"
-            columns: ["report_id"]
-            isOneToOne: false
-            referencedRelation: "reports_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1179,82 +1158,11 @@ export type Database = {
             referencedRelation: "reports"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "votes_report_id_fkey"
-            columns: ["report_id"]
-            isOneToOne: false
-            referencedRelation: "reports_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
     }
     Views: {
-      reports_public: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string | null
-          is_anonymous: boolean | null
-          issue_type: string | null
-          latitude: number | null
-          longitude: number | null
-          media_url: string | null
-          region_id: string | null
-          resolved_at: string | null
-          resolved_by: string | null
-          resolved_image_url: string | null
-          status: string | null
-          title: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string | null
-          is_anonymous?: boolean | null
-          issue_type?: string | null
-          latitude?: never
-          longitude?: never
-          media_url?: string | null
-          region_id?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          resolved_image_url?: string | null
-          status?: string | null
-          title?: string | null
-          updated_at?: string | null
-          user_id?: never
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string | null
-          is_anonymous?: boolean | null
-          issue_type?: string | null
-          latitude?: never
-          longitude?: never
-          media_url?: string | null
-          region_id?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          resolved_image_url?: string | null
-          status?: string | null
-          title?: string | null
-          updated_at?: string | null
-          user_id?: never
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reports_region_id_fkey"
-            columns: ["region_id"]
-            isOneToOne: false
-            referencedRelation: "regions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       calculate_safe_distance: {
@@ -1280,6 +1188,28 @@ export type Database = {
           id: string
           name: string
           username: string
+        }[]
+      }
+      get_safe_reports: {
+        Args: { user_region_id?: string; user_role?: string }
+        Returns: {
+          created_at: string
+          description: string
+          id: string
+          is_anonymous: boolean
+          is_approximate: boolean
+          issue_type: string
+          latitude: number
+          longitude: number
+          media_url: string
+          region_id: string
+          resolved_at: string
+          resolved_by: string
+          resolved_image_url: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
         }[]
       }
       get_share_count: {

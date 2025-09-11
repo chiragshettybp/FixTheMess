@@ -533,36 +533,40 @@ const Join = () => {
       {/* Footer */}
       <footer className="relative z-10 border-t border-border/50 py-12">
         <div className="container mx-auto px-6">
-          <div className="text-center text-muted-foreground space-y-4">
-            <p>&copy; 2024 FixTheMess. All rights reserved.</p>
-            <div className="flex items-center justify-center space-x-4 text-sm">
-              <span>Built by</span>
-              <a 
-                href="https://instagram.com/ichiragshetty" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="font-medium hover:text-primary transition-colors"
-              >
-                Chirag Shetty
-              </a>
-              <span>•</span>
-              <a 
-                href="https://instagram.com/ichiragshetty" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-primary transition-colors"
-              >
-                @ichiragshetty
-              </a>
-              <span>•</span>
-              <a 
-                href="https://github.com/chiragshettybp" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-primary transition-colors"
-              >
-                GitHub
-              </a>
+          <div className="text-center text-muted-foreground space-y-3">
+            <p className="text-sm md:text-base">&copy; 2024 FixTheMess. All rights reserved.</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs md:text-sm">
+              <div className="flex items-center space-x-2">
+                <span>Built by</span>
+                <a 
+                  href="https://instagram.com/ichiragshetty" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="font-medium hover:text-primary transition-colors"
+                >
+                  Chirag Shetty
+                </a>
+              </div>
+              <div className="hidden sm:block text-muted-foreground">•</div>
+              <div className="flex items-center space-x-3">
+                <a 
+                  href="https://instagram.com/ichiragshetty" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                >
+                  @ichiragshetty
+                </a>
+                <span className="text-muted-foreground">•</span>
+                <a 
+                  href="https://github.com/chiragshettybp" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                >
+                  GitHub
+                </a>
+              </div>
             </div>
           </div>
         </div>

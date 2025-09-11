@@ -53,6 +53,13 @@ export type Database = {
             referencedRelation: "reports"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "abuse_reports_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       actions_log: {
@@ -585,6 +592,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "report_attention_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: true
+            referencedRelation: "reports_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "report_attention_resolved_by_fkey"
             columns: ["resolved_by"]
             isOneToOne: false
@@ -791,6 +805,13 @@ export type Database = {
             columns: ["report_id"]
             isOneToOne: false
             referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "share_logs_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1158,13 +1179,92 @@ export type Database = {
             referencedRelation: "reports"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "votes_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      reports_public: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_anonymous: boolean | null
+          issue_type: string | null
+          latitude: number | null
+          longitude: number | null
+          media_url: string | null
+          region_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          resolved_image_url: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          issue_type?: string | null
+          latitude?: never
+          longitude?: never
+          media_url?: string | null
+          region_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          resolved_image_url?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: never
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          issue_type?: string | null
+          latitude?: never
+          longitude?: never
+          media_url?: string | null
+          region_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          resolved_image_url?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      calculate_safe_distance: {
+        Args: { report_id: string; user_lat: number; user_lng: number }
+        Returns: number
+      }
+      fuzz_coordinates: {
+        Args: { lat: number; lng: number; radius_meters?: number }
+        Returns: Json
+      }
       get_abuse_report_count: {
         Args: { report_id: string }
         Returns: number

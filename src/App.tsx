@@ -47,6 +47,7 @@ import SuperadminSystemHealth from "./pages/SuperadminSystemHealth";
 import SuperadminNotifications from "./pages/SuperadminNotifications";
 import UserNotifications from "./pages/UserNotifications";
 import GovNotifications from "./pages/GovNotifications";
+import SuperadminLogin from "./pages/SuperadminLogin";
 import Join from "./pages/Join";
 
 const queryClient = new QueryClient();
@@ -197,6 +198,7 @@ const App = () => (
                 </AppLayout>
               </ProtectedRoute>
             } />
+            <Route path="/superadmin/login" element={<SuperadminLogin />} />
             <Route path="/superadmin" element={
               <ProtectedRoute requiredRole="superadmin">
                 <SuperadminDashboard />

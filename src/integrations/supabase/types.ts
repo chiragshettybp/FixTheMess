@@ -1173,12 +1173,9 @@ export type Database = {
         Args: { lat: number; lng: number; radius_meters?: number }
         Returns: Json
       }
-      get_abuse_report_count: {
-        Args: { report_id: string }
-        Returns: number
-      }
+      get_abuse_report_count: { Args: { report_id: string }; Returns: number }
       get_current_user_role: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
       get_public_profiles: {
@@ -1212,10 +1209,7 @@ export type Database = {
           user_id: string
         }[]
       }
-      get_share_count: {
-        Args: { report_id: string }
-        Returns: number
-      }
+      get_share_count: { Args: { report_id: string }; Returns: number }
       get_top_reporters_public: {
         Args: { limit_count?: number }
         Returns: {
@@ -1235,10 +1229,7 @@ export type Database = {
           vote_count: number
         }[]
       }
-      get_vote_count: {
-        Args: { report_id: string }
-        Returns: number
-      }
+      get_vote_count: { Args: { report_id: string }; Returns: number }
       get_vote_counts: {
         Args: { report_ids: string[] }
         Returns: {

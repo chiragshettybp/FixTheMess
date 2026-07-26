@@ -1,69 +1,34 @@
-# Welcome to your Lovable project
+# 🛠️ FixTheMess
 
-## Project info
+FixTheMess is a community-driven platform that helps citizens report civic issues such as potholes, broken roads, garbage, water leaks, broken streetlights, and other public infrastructure problems.
 
-**URL**: https://lovable.dev/projects/4d2de453-c527-42d7-960d-21e41da7b69d
+Users can submit reports with photos, location, and a description, making it easier to bring issues to the attention of the right authorities while increasing public awareness.
 
-## How can I edit this code?
+## ✨ Why FixTheMess?
 
-There are several ways of editing your application.
+Many civic problems go unnoticed or take too long to be resolved because there is no simple, transparent way to report and track them.
 
-**Use Lovable**
+FixTheMess aims to bridge the gap between citizens and authorities by making reporting fast, accessible, and accountable.
+
+## 🚀 Features
+
+- 📍 Report issues with precise location
+- 📸 Upload photos as evidence
+- 📝 Add descriptions and issue details
+- 🗺️ View reported issues on a map
+- 📊 Track report status
+- 👥 Community-driven reporting
+
+## 🌍 Our Vision
+
+We believe technology can help build cleaner, safer, and smarter cities.
+
+Our long-term goal is to create a platform where every citizen can actively improve their community, while helping authorities respond faster through transparency, data, and collaboration.
+
+Together, we can fix our cities—one report at a time.
+
+
+
+
 
 Simply visit the [Lovable Project](https://lovable.dev/projects/4d2de453-c527-42d7-960d-21e41da7b69d) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/4d2de453-c527-42d7-960d-21e41da7b69d) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)

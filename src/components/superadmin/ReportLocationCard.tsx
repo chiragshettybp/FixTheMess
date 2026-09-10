@@ -7,9 +7,11 @@ import { Link } from 'react-router-dom';
 
 interface ReportLocationCardProps {
   report: ReportDetail;
+  onEditLocation?: () => void;
+  onViewNearby?: () => void;
 }
 
-export const ReportLocationCard = ({ report }: ReportLocationCardProps) => {
+export const ReportLocationCard = ({ report, onEditLocation, onViewNearby }: ReportLocationCardProps) => {
   // Generate a simple static map URL (you would use a real mapping service)
   const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/${report.longitude},${report.latitude},15,0/400x200?access_token=pk.example`;
   
@@ -35,7 +37,7 @@ export const ReportLocationCard = ({ report }: ReportLocationCardProps) => {
             Location
           </CardTitle>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline">
+            <Button size="sm" variant="outline" onClick={onEditLocation} disabled={!onEditLocation}>
               <Edit className="w-4 h-4 mr-2" />
               Edit Location
             </Button>
@@ -57,7 +59,7 @@ export const ReportLocationCard = ({ report }: ReportLocationCardProps) => {
               <MapPin className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">Map Preview</p>
               <p className="text-xs text-muted-foreground">
-                {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
+                {report.latitude?.toFixed(6) ?? 'N/A'}, {report.longitude?.toFixed(6) ?? 'N/A'}
               </p>
             </div>
           </div>
@@ -83,11 +85,11 @@ export const ReportLocationCard = ({ report }: ReportLocationCardProps) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h4 className="text-sm font-medium text-muted-foreground mb-1">Latitude</h4>
-              <p className="text-sm font-mono">{report.latitude.toFixed(6)}</p>
+              <p className="text-sm font-mono">{report.latitude?.toFixed(6) ?? 'N/A'}</p>
             </div>
             <div>
               <h4 className="text-sm font-medium text-muted-foreground mb-1">Longitude</h4>
-              <p className="text-sm font-mono">{report.longitude.toFixed(6)}</p>
+              <p className="text-sm font-mono">{report.longitude?.toFixed(6) ?? 'N/A'}</p>
             </div>
           </div>
 
@@ -110,7 +112,7 @@ export const ReportLocationCard = ({ report }: ReportLocationCardProps) => {
                 <Navigation className="w-4 h-4 mr-2" />
                 Open in Google Maps
               </Button>
-              <Button size="sm" variant="outline" className="flex-1">
+              <Button size="sm" variant="outline" onClick={onViewNearby} disabled={!onViewNearby} className="flex-1">
                 <MapPin className="w-4 h-4 mr-2" />
                 View Nearby Reports
               </Button>

@@ -42,18 +42,6 @@ export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) 
       }
     }
 
-    // Special handling for admin@ibolinva.com to access superadmin
-    if (user.email === 'admin@ibolinva.com' && profile?.role === 'admin') {
-      if (requiredRole === 'superadmin') {
-        // Allow access to superadmin routes
-        return;
-      } else if (!requiredRole) {
-        // Redirect to superadmin dashboard by default
-        navigate('/superadmin');
-        return;
-      }
-    }
-
     if (requiredRole && profile?.role !== requiredRole) {
       // Redirect to appropriate page based on role
       switch (profile?.role) {
@@ -83,11 +71,6 @@ export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) 
 
   if (!user) {
     return null;
-  }
-
-  // Special access for admin@ibolinva.com to superadmin routes
-  if (requiredRole === 'superadmin' && user?.email === 'admin@ibolinva.com' && profile?.role === 'admin') {
-    return <>{children}</>;
   }
 
   if (requiredRole && profile?.role !== requiredRole) {

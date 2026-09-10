@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface UserWithStats {
   id: string;
@@ -24,10 +25,15 @@ export const useAllUsers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const { toast } = useToast();
+  const { profile } = useAuth();
 
   const ITEMS_PER_PAGE = 25;
 
   const fetchUsers = async () => {
+    if (!profile || (profile.role !== 'superadmin' && profile.role !== 'admin')) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       

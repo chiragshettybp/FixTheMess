@@ -12,8 +12,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, MapPin, Search, Filter, Navigation, ThumbsUp, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Set your Mapbox access token here
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2hpcmFnYnAiLCJhIjoiY21keWh5bjVnMDIzdjJrbzh2bDQyYXVqZiJ9.YNL-HcWvvePXhmiO_wSSMg';
+// Set your Mapbox access token from environment variable
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 interface Report {

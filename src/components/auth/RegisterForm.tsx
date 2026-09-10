@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
-import { useAuth, UserRole } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Eye, EyeOff, Shield, User } from 'lucide-react';
 
@@ -63,8 +63,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
     }
 
     try {
-      const role: UserRole = isGovernmentOfficial ? 'admin' : 'user';
-      const { error } = await signUp(email, password, name.trim(), role, isAnonymous);
+      const { error } = await signUp(email, password, name.trim(), 'user', isAnonymous);
 
       if (error) {
         if (error.message.includes('User already registered')) {

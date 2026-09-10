@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { LogOut, Settings, User, Shield, Crown, Menu, Home, Plus, Map, FileText, Bell } from 'lucide-react';
+import logo from '@/assets/logo.png';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 export const Header = () => {
@@ -84,7 +85,7 @@ export const Header = () => {
       <div className="container flex h-14 items-center justify-between px-4">
         {/* Logo/Brand */}
         <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/')}>
-          <img src="https://i.postimg.cc/KvRTF1Gv/9e68cf922fa54e8a449aece2ba232072-removebg-preview-1.png" alt="FTM Logo" className="h-5 w-auto object-contain" />
+          <img src={logo} alt="FTM Logo" className="h-5 w-auto object-contain" />
           <span className="hidden font-bold sm:inline-block">FixTheMess</span>
         </div>
 

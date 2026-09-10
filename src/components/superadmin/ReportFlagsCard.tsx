@@ -18,12 +18,16 @@ interface ReportFlagsCardProps {
   flags: ReportFlag[];
   onResolveFlag: (flagId: string) => void;
   onAddNote: (note: string) => void;
+  onMarkNSFW?: () => void;
+  onAddFlag?: () => void;
 }
 
 export const ReportFlagsCard = ({ 
   flags, 
   onResolveFlag, 
-  onAddNote 
+  onAddNote,
+  onMarkNSFW,
+  onAddFlag
 }: ReportFlagsCardProps) => {
   const [newNote, setNewNote] = useState('');
   const [isAddingNote, setIsAddingNote] = useState(false);
@@ -203,11 +207,23 @@ export const ReportFlagsCard = ({
         <div className="pt-3 border-t">
           <h5 className="text-sm font-medium mb-2">Quick Actions</h5>
           <div className="grid grid-cols-2 gap-2">
-            <Button size="sm" variant="outline" className="text-xs">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-xs"
+              onClick={onMarkNSFW}
+              disabled={!onMarkNSFW}
+            >
               <AlertTriangle className="w-3 h-3 mr-1" />
               Mark NSFW
             </Button>
-            <Button size="sm" variant="outline" className="text-xs">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-xs"
+              onClick={onAddFlag}
+              disabled={!onAddFlag}
+            >
               <Flag className="w-3 h-3 mr-1" />
               Add Flag
             </Button>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { Button } from '@/components/ui/button';
+import logo from '@/assets/logo.png';
 const Auth = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   return <div className="min-h-screen bg-background">
@@ -9,7 +10,7 @@ const Auth = () => {
         <div className="max-w-md mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <img src="https://i.postimg.cc/KvRTF1Gv/9e68cf922fa54e8a449aece2ba232072-removebg-preview-1.png" alt="FixTheMess Logo" className="h-16 mx-auto mb-2" />
+            <img src={logo} alt="FixTheMess Logo" className="h-16 mx-auto mb-2" />
             <p className="text-muted-foreground">
               Report civic issues and help improve your community
             </p>

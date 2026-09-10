@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Send, Users, UserCheck, Shield, Clock, User } from 'lucide-react';
+import { Send, Users, UserCheck, Shield, User } from 'lucide-react';
 import type { SuperadminNotification } from '@/pages/SuperadminNotifications';
 
 interface NotificationComposerProps {
@@ -33,7 +33,6 @@ export const NotificationComposer = ({ onNotificationSent }: NotificationCompose
   const [recipientType, setRecipientType] = useState<'all' | 'role' | 'specific'>('all');
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [scheduleTime, setScheduleTime] = useState('');
   const [sending, setSending] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -134,7 +133,7 @@ export const NotificationComposer = ({ onNotificationSent }: NotificationCompose
         priority,
         recipient_role: recipientType === 'role' ? selectedRole : null,
         sent_by: user?.id,
-        delivery_status: scheduleTime ? 'scheduled' : 'sent',
+        delivery_status: 'sent' as const,
         is_read: false
       }));
 
@@ -152,7 +151,6 @@ export const NotificationComposer = ({ onNotificationSent }: NotificationCompose
       setRecipientType('all');
       setSelectedRole('');
       setSelectedUsers([]);
-      setScheduleTime('');
 
       // Notify parent component with the first notification
       if (data && data.length > 0) {
@@ -161,7 +159,7 @@ export const NotificationComposer = ({ onNotificationSent }: NotificationCompose
 
       toast({
         title: 'Success',
-        description: `Notification ${scheduleTime ? 'scheduled' : 'sent'} to ${recipientUserIds.length} users`,
+        description: `Notification sent to ${recipientUserIds.length} users`,
       });
 
     } catch (error) {
@@ -329,23 +327,6 @@ export const NotificationComposer = ({ onNotificationSent }: NotificationCompose
           </div>
         )}
 
-        {/* Schedule Time (Optional) */}
-        <div>
-          <label className="text-sm font-medium mb-2 block">
-            <Clock className="h-4 w-4 inline mr-1" />
-            Schedule (Optional)
-          </label>
-          <Input
-            type="datetime-local"
-            value={scheduleTime}
-            onChange={(e) => setScheduleTime(e.target.value)}
-            min={new Date().toISOString().slice(0, 16)}
-          />
-          <div className="text-xs text-muted-foreground mt-1">
-            Leave empty to send immediately
-          </div>
-        </div>
-
         {/* Preview */}
         {(title || message) && (
           <div className="border rounded-md p-3 bg-muted/50">
@@ -371,12 +352,12 @@ export const NotificationComposer = ({ onNotificationSent }: NotificationCompose
           {sending ? (
             <>
               <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2" />
-              {scheduleTime ? 'Scheduling...' : 'Sending...'}
+              Sending...
             </>
           ) : (
             <>
               <Send className="h-4 w-4 mr-2" />
-              {scheduleTime ? 'Schedule Notification' : 'Send Notification'}
+              Send Notification
             </>
           )}
         </Button>

@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { 
   Clock, 
   FileText, 
@@ -16,9 +19,18 @@ import { TimelineEvent } from '@/hooks/useSuperadminReportDetail';
 
 interface ReportTimelineProps {
   timeline: TimelineEvent[];
+  onAddNote?: (note: string) => void;
 }
 
-export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
+export const ReportTimeline = ({ timeline, onAddNote }: ReportTimelineProps) => {
+  const [noteText, setNoteText] = useState('');
+
+  const handleAddNote = () => {
+    if (noteText.trim() && onAddNote) {
+      onAddNote(noteText.trim());
+      setNoteText('');
+    }
+  };
   const getActionIcon = (action: string) => {
     switch (action) {
       case 'created':
@@ -163,20 +175,28 @@ export const ReportTimeline = ({ timeline }: ReportTimelineProps) => {
         )}
 
         {/* Add Timeline Event (for admins) */}
-        <div className="pt-4 border-t mt-6">
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Add admin note to timeline..."
-                className="w-full px-3 py-2 text-sm border rounded-md bg-background"
-              />
+        {onAddNote && (
+          <div className="pt-4 border-t mt-6">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  type="text"
+                  placeholder="Add admin note to timeline..."
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddNote()}
+                />
+              </div>
+              <Button 
+                onClick={handleAddNote}
+                disabled={!noteText.trim()}
+                size="sm"
+              >
+                Add Note
+              </Button>
             </div>
-            <button className="px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-              Add Note
-            </button>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

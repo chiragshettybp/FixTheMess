@@ -112,11 +112,17 @@ export const GovRegisterForm = ({ onSwitchToLogin }: GovRegisterFormProps) => {
         return null;
       }
 
-      const { data } = supabase.storage
+      // Create a signed URL (expires in 1 year) instead of a public URL
+      const { data, error: signedUrlError } = await supabase.storage
         .from('government-docs')
-        .getPublicUrl(fileName);
+        .createSignedUrl(fileName, 60 * 60 * 24 * 365);
 
-      return data.publicUrl;
+      if (signedUrlError) {
+        console.error('Error creating signed URL:', signedUrlError);
+        return null;
+      }
+
+      return data.signedUrl;
     } catch (err) {
       console.error('Error uploading government ID:', err);
       return null;

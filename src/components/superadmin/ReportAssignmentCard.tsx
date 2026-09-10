@@ -18,12 +18,16 @@ interface ReportAssignmentCardProps {
   report: ReportDetail;
   cityAdmins: any[];
   onAssign: (adminId: string) => void;
+  onNotifyAssignee?: () => void;
+  onEscalate?: () => void;
 }
 
 export const ReportAssignmentCard = ({ 
   report, 
   cityAdmins, 
-  onAssign 
+  onAssign,
+  onNotifyAssignee,
+  onEscalate
 }: ReportAssignmentCardProps) => {
   const [selectedAdmin, setSelectedAdmin] = useState<string>('');
   const [isAssigning, setIsAssigning] = useState(false);
@@ -207,13 +211,25 @@ export const ReportAssignmentCard = ({
         <div className="pt-3 border-t">
           <Label className="text-sm font-medium mb-2 block">Notification Options</Label>
           <div className="space-y-2">
-            <Button size="sm" variant="outline" className="w-full justify-start text-xs">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="w-full justify-start text-xs"
+              onClick={onNotifyAssignee}
+              disabled={!onNotifyAssignee || !currentAssignee}
+            >
               <Mail className="w-3 h-3 mr-2" />
               Notify Assignee
             </Button>
             
             {sla.isOverdue && (
-              <Button size="sm" variant="outline" className="w-full justify-start text-xs text-red-600">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="w-full justify-start text-xs text-red-600"
+                onClick={onEscalate}
+                disabled={!onEscalate}
+              >
                 <AlertTriangle className="w-3 h-3 mr-2" />
                 Send Escalation Notice
               </Button>

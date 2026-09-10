@@ -132,8 +132,13 @@ const ReportIssue = () => {
 
   // Check for captured image from camera preview on feed page
   useEffect(() => {
-    const capturedImage = localStorage.getItem('capturedReportImage');
+    const capturedImage = sessionStorage.getItem('capturedReportImage');
     if (capturedImage) {
+      // Validate data URL format
+      if (!capturedImage.startsWith('data:image/')) {
+        sessionStorage.removeItem('capturedReportImage');
+        return;
+      }
       // Convert data URL to File object
       const dataURLtoFile = (dataurl: string, filename: string): File => {
         const arr = dataurl.split(',');
@@ -156,7 +161,7 @@ const ReportIssue = () => {
       };
 
       setCapturedPhotos([photo]);
-      localStorage.removeItem('capturedReportImage'); // Clear after use
+      sessionStorage.removeItem('capturedReportImage');
       
       toast({
         title: 'Photo loaded!',

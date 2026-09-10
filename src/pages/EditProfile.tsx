@@ -374,14 +374,16 @@ const EditProfile = () => {
         supabase.from('users').delete().eq('id', user.id),
       ]);
 
-      // Delete user from Supabase Auth
-      const { error } = await supabase.auth.admin.deleteUser(user.id);
-      
-      if (error) throw error;
+      // Note: Cannot delete Supabase Auth user from client with anon key.
+      // The user's auth record will remain but all data is removed.
+      // A superadmin can clean up orphaned auth users via the dashboard.
+
+      // Sign out after deleting local data
+      await supabase.auth.signOut();
 
       toast({
         title: "Account Deleted",
-        description: "Your account has been permanently deleted",
+        description: "Your account data has been permanently deleted.",
       });
 
       navigate('/auth');

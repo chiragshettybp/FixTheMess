@@ -1,38 +1,27 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { Shield, Lock } from 'lucide-react';
+import { Shield, Loader2 } from 'lucide-react';
 
 const SuperadminLogin = () => {
-  const [pin, setPin] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { user, profile, loading } = useAuth();
 
-  const handlePinSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  useEffect(() => {
+    if (loading) return;
 
-    if (pin === '23112004') {
-      toast({
-        title: "Access Granted",
-        description: "Welcome to Superadmin Dashboard",
-      });
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (profile?.role === 'superadmin') {
       navigate('/superadmin');
     } else {
-      toast({
-        title: "Access Denied",
-        description: "Invalid security pin",
-        variant: "destructive",
-      });
+      navigate('/auth');
     }
-    
-    setLoading(false);
-    setPin('');
-  };
+  }, [user, profile, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -42,32 +31,16 @@ const SuperadminLogin = () => {
             <Shield className="w-8 h-8 text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold">Superadmin Access</CardTitle>
-          <p className="text-muted-foreground">Enter security pin to continue</p>
+          <div className="flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <p className="text-muted-foreground">Verifying credentials...</p>
+          </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handlePinSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  type="password"
-                  placeholder="Enter security pin"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  className="pl-10 text-center text-lg tracking-wider"
-                  maxLength={8}
-                  required
-                />
-              </div>
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={loading || pin.length === 0}
-            >
-              {loading ? 'Verifying...' : 'Access Dashboard'}
-            </Button>
-          </form>
+          <p className="text-sm text-center text-muted-foreground">
+            Superadmin access is managed through your authenticated session. 
+            Please sign in with a superadmin account.
+          </p>
         </CardContent>
       </Card>
     </div>

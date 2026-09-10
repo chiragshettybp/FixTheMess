@@ -72,12 +72,17 @@ export const useGovernmentReports = () => {
         return;
       }
 
-      // For now, fetch all reports since region_id is not properly assigned to reports
-      // TODO: In the future, filter by region when reports have region_id assigned
-      const { data, error } = await supabase
+      // Filter by region if government user has a region assigned
+      const query = supabase
         .from('reports')
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (governmentUser.region_id) {
+        query.eq('region_id', governmentUser.region_id);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error fetching reports:', error);

@@ -91,7 +91,7 @@ export const ReportCard = ({ report, onViewDetails }: ReportCardProps) => {
           <div className="flex items-center gap-1">
             <MapPin className="h-3 w-3" />
             <span>
-              {report.latitude.toFixed(4)}, {report.longitude.toFixed(4)}
+              {report.latitude?.toFixed(4) ?? 'N/A'}, {report.longitude?.toFixed(4) ?? 'N/A'}
             </span>
           </div>
         </div>

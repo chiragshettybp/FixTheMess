@@ -29,7 +29,9 @@ export const ReportDetailModal = ({
   const [uploading, setUploading] = useState(false);
   const [marking, setMarking] = useState(false);
 
-  if (!report) return null;
+  if (!report) {
+    return null;
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -205,7 +207,7 @@ export const ReportDetailModal = ({
                 <div className="flex items-center gap-2 text-sm">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">Location:</span>
-                  <span>{report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}</span>
+                  <span>{report.latitude?.toFixed(6) ?? 'N/A'}, {report.longitude?.toFixed(6) ?? 'N/A'}</span>
                 </div>
                 
                 <div className="flex items-center gap-2 text-sm">

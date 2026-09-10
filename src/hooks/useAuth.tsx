@@ -102,10 +102,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, name: string, role: UserRole = 'user', isAnonymous: boolean = false) => {
+  const signUp = async (email: string, password: string, name: string, _role?: UserRole, isAnonymous: boolean = false) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
-      
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -113,7 +113,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           emailRedirectTo: redirectUrl,
           data: {
             name,
-            role,
             is_anonymous: isAnonymous
           }
         }

@@ -15,16 +15,21 @@ interface ReportEngagementCardProps {
   report: ReportDetail;
 }
 
-export const ReportEngagementCard = ({ report }: ReportEngagementCardProps) => {
-  // Mock engagement data (in a real app, this would come from the database)
-  const mockEngagementData = {
-    votes: Math.floor(Math.random() * 50) + 5,
-    shares: Math.floor(Math.random() * 20) + 2,
-    comments: Math.floor(Math.random() * 30) + 1,
-    views: Math.floor(Math.random() * 200) + 50,
-    reactions: Math.floor(Math.random() * 15) + 3,
-    bookmarks: Math.floor(Math.random() * 10) + 1
+// Stable mock engagement data derived from report ID for consistency
+const getStableMockData = (reportId: string) => {
+  const hash = reportId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return {
+    votes: (hash % 45) + 5,
+    shares: (hash % 18) + 2,
+    comments: (hash % 29) + 1,
+    views: (hash % 150) + 50,
+    reactions: (hash % 12) + 3,
+    bookmarks: (hash % 9) + 1
   };
+};
+
+export const ReportEngagementCard = ({ report }: ReportEngagementCardProps) => {
+  const mockEngagementData = getStableMockData(report.id);
 
   const engagementItems = [
     {

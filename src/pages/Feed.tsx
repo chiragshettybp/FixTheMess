@@ -44,8 +44,8 @@ export default function Feed() {
   // Camera preview states
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [stream, setStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
 
@@ -55,13 +55,13 @@ export default function Feed() {
       setCameraError(null);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { 
-          facingMode: 'environment', // Prefer back camera on mobile
+          facingMode: 'environment',
           width: { ideal: 1920 },
           height: { ideal: 1080 }
         }
       });
       
-      setStream(mediaStream);
+      streamRef.current = mediaStream;
       setIsCameraOpen(true);
       
       if (videoRef.current) {
@@ -75,16 +75,16 @@ export default function Feed() {
   };
 
   const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
     setIsCameraOpen(false);
     setCameraError(null);
   };
 
   const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current || !stream) return;
+    if (!videoRef.current || !canvasRef.current || !streamRef.current) return;
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -118,7 +118,7 @@ export default function Feed() {
   const proceedToReport = () => {
     if (capturedImage) {
       // Store the captured image in localStorage temporarily and navigate to report page
-      localStorage.setItem('capturedReportImage', capturedImage);
+      sessionStorage.setItem('capturedReportImage', capturedImage);
       navigate('/report');
     }
   };
@@ -126,9 +126,12 @@ export default function Feed() {
   // Cleanup camera on unmount
   useEffect(() => {
     return () => {
-      stopCamera();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
     };
-  }, [stream]);
+  }, []);
   
   const fetchReports = async () => {
     try {
@@ -169,21 +172,35 @@ export default function Feed() {
         return;
       }
 
-      // Fetch vote counts and user votes for each report
-      const reportsWithVotes = await Promise.all(
-        (data || []).map(async (report) => {
-          const { data: voteData } = await supabase.rpc('get_vote_count', { report_id: report.id });
-          const { data: userVoteData } = user 
-            ? await supabase.rpc('user_has_voted', { report_id: report.id, user_id: user.id })
-            : { data: false };
+      const reportIds = (data || []).map(r => r.id);
 
-          return {
-            ...report,
-            vote_count: voteData || 0,
-            user_has_voted: userVoteData || false
-          } as Report;
-        })
-      );
+      // Batch-fetch vote counts
+      const { data: voteCounts } = await supabase
+        .from('votes')
+        .select('report_id')
+        .in('report_id', reportIds);
+
+      const voteCountMap = new Map<string, number>();
+      voteCounts?.forEach(v => {
+        voteCountMap.set(v.report_id, (voteCountMap.get(v.report_id) || 0) + 1);
+      });
+
+      // Batch-fetch user votes
+      const userVoteSet = new Set<string>();
+      if (user && reportIds.length > 0) {
+        const { data: userVotes } = await supabase
+          .from('votes')
+          .select('report_id')
+          .eq('user_id', user.id)
+          .in('report_id', reportIds);
+        userVotes?.forEach(v => userVoteSet.add(v.report_id));
+      }
+
+      const reportsWithVotes = (data || []).map(report => ({
+        ...report,
+        vote_count: voteCountMap.get(report.id) || 0,
+        user_has_voted: userVoteSet.has(report.id)
+      } as Report));
 
       // Sort by votes if needed
       if (sortBy === 'votes') {

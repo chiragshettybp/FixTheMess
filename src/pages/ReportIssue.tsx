@@ -56,6 +56,12 @@ const ReportIssue = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
 
+  // Guest login gate
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
   // Camera cleanup
   const stopCamera = () => {
     if (stream) {
@@ -374,18 +380,8 @@ const ReportIssue = () => {
     return Promise.all(uploadPromises);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validation
-    if (!formData.title.trim()) {
-      toast({
-        title: 'Title required',
-        description: 'Please provide a title for your report.',
-        variant: 'destructive',
-      });
-      return;
-    }
+  const submitReport = async () => {
+    const currentUser = userRef.current;
 
     if (capturedPhotos.length === 0) {
       toast({
@@ -421,7 +417,7 @@ const ReportIssue = () => {
         latitude: location.latitude,
         longitude: location.longitude,
         is_anonymous: formData.isAnonymous,
-        user_id: formData.isAnonymous ? null : user?.id,
+        user_id: formData.isAnonymous ? null : currentUser?.id,
         status: 'pending',
       };
 
@@ -455,6 +451,110 @@ const ReportIssue = () => {
       setIsSubmitting(false);
     }
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validation
+    if (!formData.title.trim()) {
+      toast({
+        title: 'Title required',
+        description: 'Please provide a title for your report.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Require authentication before submitting a report
+    if (!userRef.current) {
+      await saveDraft();
+      sessionStorage.setItem('fixTheMessResumeReport', '1');
+      navigate('/auth');
+      return;
+    }
+
+    submitReport();
+  };
+
+  const dataURLtoFile = (dataurl: string, filename: string): File => {
+    const arr = dataurl.split(',');
+    const mime = arr[0].match(/:(.*?);/)![1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  const fileToDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const saveDraft = async () => {
+    try {
+      const photoData = await Promise.all(
+        capturedPhotos.map(async (photo) => ({
+          id: photo.id,
+          timestamp: photo.timestamp,
+          dataUrl: await fileToDataURL(photo.file),
+        }))
+      );
+      sessionStorage.setItem(
+        'fixTheMessReportDraft',
+        JSON.stringify({ formData, location, capturedPhotos: photoData })
+      );
+    } catch (error) {
+      console.error('Error saving draft:', error);
+    }
+  };
+
+  const restoreDraft = () => {
+    const raw = sessionStorage.getItem('fixTheMessReportDraft');
+    if (!raw) return;
+    try {
+      const draft = JSON.parse(raw);
+      if (draft.formData) setFormData(draft.formData);
+      if (draft.location) setLocation(draft.location);
+      if (Array.isArray(draft.capturedPhotos) && draft.capturedPhotos.length > 0) {
+        const photos: CapturedPhoto[] = draft.capturedPhotos.map(
+          (p: { id: string; timestamp: number; dataUrl: string }) => {
+            const file = dataURLtoFile(p.dataUrl, `draft-${p.timestamp}.jpg`);
+            return {
+              id: p.id,
+              file,
+              preview: URL.createObjectURL(file),
+              timestamp: p.timestamp,
+            };
+          }
+        );
+        setCapturedPhotos(photos);
+      }
+      sessionStorage.removeItem('fixTheMessReportDraft');
+      toast({
+        title: 'Draft restored',
+        description: 'Your previously entered report details have been restored.',
+      });
+    } catch (error) {
+      console.error('Error restoring draft:', error);
+      sessionStorage.removeItem('fixTheMessReportDraft');
+    }
+  };
+
+  useEffect(() => {
+    const resume = sessionStorage.getItem('fixTheMessResumeReport');
+    if (resume && userRef.current) {
+      sessionStorage.removeItem('fixTheMessResumeReport');
+      restoreDraft();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const canSubmit = formData.title.trim() && capturedPhotos.length > 0 && location && !isSubmitting;
 

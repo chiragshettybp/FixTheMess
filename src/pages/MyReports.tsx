@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock, ThumbsUp, Plus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { Reveal } from '@/lib/scroll-motion';
 
 interface Report {
   id: string;
@@ -142,10 +143,10 @@ export default function MyReports() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reports.map((report) => (
+            {reports.map((report, index) => (
+              <Reveal key={report.id} delay={index * 50} className="h-full">
               <Card 
-                key={report.id} 
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                className="cursor-pointer hover:shadow-lg transition-shadow h-full"
                 onClick={() => navigate(`/report/${report.id}`)}
               >
                 <div className="aspect-video relative overflow-hidden rounded-t-lg">
@@ -194,6 +195,7 @@ export default function MyReports() {
                   </div>
                 </CardContent>
               </Card>
+              </Reveal>
             ))}
           </div>
         </>

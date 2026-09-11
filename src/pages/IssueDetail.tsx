@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useGuestId } from '@/hooks/useGuestId';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, MapPin, Clock, ThumbsUp, Share2, CheckCircle, User, Calendar, Flag } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { toggleVote } from '@/lib/vote';
 
 
 interface ReportDetail {
@@ -38,7 +40,12 @@ export default function IssueDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, profile } = useAuth();
+  const { getGuestId } = useGuestId();
   const { toast } = useToast();
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
   const [report, setReport] = useState<ReportDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState<string | null>(null);
@@ -90,9 +97,20 @@ export default function IssueDetail() {
 
       // Fetch vote count and user vote status
       const { data: voteData } = await supabase.rpc('get_vote_count', { report_id: id });
-      const { data: userVoteData } = user 
-        ? await supabase.rpc('user_has_voted', { report_id: id, user_id: user.id })
-        : { data: false };
+      const currentUser = userRef.current;
+      let userVoteData: boolean | null = null;
+      if (currentUser) {
+        const { data: voted } = await supabase.rpc('user_has_voted', { report_id: id, user_id: currentUser.id });
+        userVoteData = voted || false;
+      } else {
+        const { data: guestVotedRows } = await supabase
+          .from('votes')
+          .select('id')
+          .eq('report_id', id)
+          .eq('anon_id', getGuestId())
+          .limit(1);
+        userVoteData = !!guestVotedRows && guestVotedRows.length > 0;
+      }
 
       setReport({
         ...data,
@@ -121,44 +139,38 @@ export default function IssueDetail() {
     fetchReport();
   }, [id, user]);
 
+  const [votedPulse, setVotedPulse] = useState(false);
+  const [sendingVote, setSendingVote] = useState(false);
+
   const handleUpvote = async () => {
-    if (!user || !report) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to vote on reports",
-        variant: "destructive"
-      });
-      return;
-    }
+    if (!report || sendingVote) return;
+    const currentUser = userRef.current;
+    const current = report.user_has_voted;
+    const target = !current;
+
+    setSendingVote(true);
+    // Optimistic update
+    setVotedPulse(false);
+    requestAnimationFrame(() => setVotedPulse(true));
+    setReport({ ...report, user_has_voted: target, vote_count: (report.vote_count || 0) + (target ? 1 : -1) });
 
     try {
-      if (report.user_has_voted) {
-        // Remove vote
-        const { error } = await supabase
-          .from('votes')
-          .delete()
-          .eq('report_id', report.id)
-          .eq('user_id', user.id);
-
-        if (error) throw error;
-      } else {
-        // Add vote
-        const { error } = await supabase
-          .from('votes')
-          .insert({ report_id: report.id, user_id: user.id });
-
-        if (error) throw error;
-      }
-
+      const { error } = await toggleVote(report.id, current, currentUser, getGuestId);
+      if (error) throw error;
+      setVotedPulse(true);
+      setTimeout(() => setVotedPulse(false), 600);
       // Refresh the report to update vote count
       fetchReport();
     } catch (error) {
       console.error('Error toggling vote:', error);
+      setReport({ ...report, user_has_voted: current, vote_count: (report.vote_count || 0) + (target ? -1 : 1) });
       toast({
         title: "Error",
         description: "Failed to update vote",
         variant: "destructive"
       });
+    } finally {
+      setSendingVote(false);
     }
   };
 
@@ -448,10 +460,10 @@ export default function IssueDetail() {
               <Button
                 onClick={handleUpvote}
                 variant={report.user_has_voted ? "default" : "outline"}
-                className="w-full"
-                disabled={!user}
+                className={`w-full vote-btn ${votedPulse ? 'vote-pop' : ''} ${report.user_has_voted ? 'vote-active' : ''}`}
+                disabled={sendingVote}
               >
-                <ThumbsUp className="w-4 h-4 mr-2" />
+                <ThumbsUp className={`w-4 h-4 mr-2 vote-thumb ${report.user_has_voted ? 'fill-current' : ''}`} />
                 {report.user_has_voted ? 'Upvoted' : 'Upvote'} ({report.vote_count})
               </Button>
               

@@ -13,9 +13,10 @@ import { Loader2, Eye, EyeOff, Shield, User } from 'lucide-react';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
+  onSuccess?: () => void;
 }
 
-export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
+export const RegisterForm = ({ onSwitchToLogin, onSuccess }: RegisterFormProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -78,11 +79,20 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
           title: "Account created successfully!",
           description: "Please check your email to verify your account.",
         });
-        
-        // Show success message and redirect
-        setTimeout(() => {
-          navigate('/home');
-        }, 2000);
+
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // Show success message and redirect
+          setTimeout(() => {
+            // Return to the report flow if a draft is waiting, otherwise go home
+            if (sessionStorage.getItem('fixTheMessResumeReport')) {
+              navigate('/report');
+            } else {
+              navigate('/home');
+            }
+          }, 2000);
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred');

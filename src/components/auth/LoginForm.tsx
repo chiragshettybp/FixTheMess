@@ -10,9 +10,11 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 interface LoginFormProps {
   onSwitchToRegister: () => void;
+  onSuccess?: () => void;
 }
 export const LoginForm = ({
-  onSwitchToRegister
+  onSwitchToRegister,
+  onSuccess
 }: LoginFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,8 +26,7 @@ export const LoginForm = ({
   const [resetLoading, setResetLoading] = useState(false);
   const {
     signIn,
-    resetPassword,
-    profile
+    resetPassword
   } = useAuth();
   const {
     toast
@@ -58,11 +59,19 @@ export const LoginForm = ({
           description: "You have successfully logged in."
         });
 
-        // Wait for profile to be available, then redirect to home
-        setTimeout(() => {
-          // Redirect to home page using React Router
-          navigate('/home');
-        }, 100);
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // Wait for profile to be available, then redirect
+          setTimeout(() => {
+            // Return to the report flow if a draft is waiting, otherwise go home
+            if (sessionStorage.getItem('fixTheMessResumeReport')) {
+              navigate('/report');
+            } else {
+              navigate('/home');
+            }
+          }, 100);
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred');

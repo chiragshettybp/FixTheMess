@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Trash2, RefreshCw, Eye, Calendar, User, MessageSquare } from 'lucide-react';
+import { Trash2, RefreshCw, Eye, User, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import type { SuperadminNotification } from '@/pages/SuperadminNotifications';
 

@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Supabase CLI / scratch artifacts
+supabase/.temp/
+qa-test/
+supabase/dump.sql
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

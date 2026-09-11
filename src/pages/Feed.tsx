@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useGuestId } from '@/hooks/useGuestId';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock, ThumbsUp, Filter, Camera, X, RotateCcw } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { Reveal } from '@/lib/scroll-motion';
+import { toggleVote } from '@/lib/vote';
 
 interface Report {
   id: string;
@@ -35,7 +38,12 @@ type SortOption = 'recent' | 'votes' | 'resolved';
 export default function Feed() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { getGuestId } = useGuestId();
   const { toast } = useToast();
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>('recent');
@@ -187,13 +195,21 @@ export default function Feed() {
 
       // Batch-fetch user votes
       const userVoteSet = new Set<string>();
-      if (user && reportIds.length > 0) {
+      if (userRef.current && reportIds.length > 0) {
         const { data: userVotes } = await supabase
           .from('votes')
           .select('report_id')
-          .eq('user_id', user.id)
+          .eq('user_id', userRef.current.id)
           .in('report_id', reportIds);
         userVotes?.forEach(v => userVoteSet.add(v.report_id));
+      } else if (reportIds.length > 0) {
+        // Guest vote status
+        const { data: guestVotes } = await supabase
+          .from('votes')
+          .select('report_id')
+          .eq('anon_id', getGuestId())
+          .in('report_id', reportIds);
+        guestVotes?.forEach(v => userVoteSet.add(v.report_id));
       }
 
       const reportsWithVotes = (data || []).map(report => ({
@@ -224,43 +240,52 @@ export default function Feed() {
     fetchReports();
   }, [sortBy, showResolved]);
 
+  const [votedPulse, setVotedPulse] = useState<string | null>(null);
+  const [pendingVote, setPendingVote] = useState<Record<string, boolean>>({});
+
   const handleUpvote = async (reportId: string, currentVoteStatus: boolean) => {
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to vote on reports",
-        variant: "destructive"
-      });
-      return;
-    }
+    const currentUser = userRef.current;
+    const target = !currentVoteStatus;
+    // Optimistic update
+    setPendingVote(prev => ({ ...prev, [reportId]: true }));
+    setVotedPulse(null);
+    requestAnimationFrame(() => setVotedPulse(reportId));
+    setReports(prev =>
+      prev.map(r =>
+        r.id === reportId
+          ? { ...r, user_has_voted: target, vote_count: (r.vote_count || 0) + (target ? 1 : -1) }
+          : r
+      )
+    );
 
     try {
-      if (currentVoteStatus) {
-        // Remove vote
-        const { error } = await supabase
-          .from('votes')
-          .delete()
-          .eq('report_id', reportId)
-          .eq('user_id', user.id);
+      const { error } = await toggleVote(reportId, currentVoteStatus, currentUser, getGuestId);
+      if (error) throw error;
 
-        if (error) throw error;
-      } else {
-        // Add vote
-        const { error } = await supabase
-          .from('votes')
-          .insert({ report_id: reportId, user_id: user.id });
-
-        if (error) throw error;
-      }
-
-      // Refresh the reports to update vote counts
-      fetchReports();
+      // Refresh to sync counts from server
+      await fetchReports();
+      setVotedPulse(reportId);
+      setTimeout(() => setVotedPulse(null), 600);
     } catch (error) {
       console.error('Error toggling vote:', error);
+      // Rollback optimistic update
+      setReports(prev =>
+        prev.map(r =>
+          r.id === reportId
+            ? { ...r, user_has_voted: currentVoteStatus, vote_count: (r.vote_count || 0) + (target ? -1 : 1) }
+            : r
+        )
+      );
       toast({
         title: "Error",
         description: "Failed to update vote",
         variant: "destructive"
+      });
+    } finally {
+      setPendingVote(prev => {
+        const next = { ...prev };
+        delete next[reportId];
+        return next;
       });
     }
   };
@@ -436,10 +461,10 @@ export default function Feed() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reports.map((report) => (
+          {reports.map((report, index) => (
+            <Reveal key={report.id} delay={index * 50} className="h-full">
             <Card 
-              key={report.id} 
-              className="cursor-pointer hover:shadow-lg transition-shadow"
+              className="cursor-pointer hover:shadow-lg transition-shadow h-full"
               onClick={() => navigate(`/report/${report.id}`)}
             >
               <div className="aspect-video relative overflow-hidden rounded-t-lg">
@@ -485,18 +510,20 @@ export default function Feed() {
                   <Button
                     variant={report.user_has_voted ? "default" : "outline"}
                     size="sm"
+                    disabled={!!pendingVote[report.id]}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleUpvote(report.id, report.user_has_voted || false);
                     }}
-                    className="flex items-center gap-1"
+                    className={`flex items-center gap-1 vote-btn ${votedPulse === report.id ? 'vote-pop' : ''} ${report.user_has_voted ? 'vote-active' : ''}`}
                   >
-                    <ThumbsUp className="w-4 h-4" />
+                    <ThumbsUp className={`w-4 h-4 vote-thumb ${report.user_has_voted ? 'fill-current' : ''}`} />
                     {report.vote_count || 0}
                   </Button>
                 </div>
               </CardContent>
             </Card>
+            </Reveal>
           ))}
         </div>
       )}

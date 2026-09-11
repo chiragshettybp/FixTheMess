@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Shield, Save, RefreshCw } from 'lucide-react';
 import { useSettingsManagement } from '@/hooks/useSettingsManagement';
 import { useAuth } from '@/hooks/useAuth';

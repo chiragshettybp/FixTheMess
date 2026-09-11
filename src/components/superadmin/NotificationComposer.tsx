@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Send, Users, UserCheck, Shield, User } from 'lucide-react';
+import { Send, Users, UserCheck, Shield } from 'lucide-react';
 import type { SuperadminNotification } from '@/pages/SuperadminNotifications';
 
 interface NotificationComposerProps {

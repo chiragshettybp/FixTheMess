@@ -67,6 +67,38 @@
     --gradient-hero: radial-gradient(ellipse at center, hsl(var(--primary) / 0.15) 0%, transparent 70%);
 
     --radius: 1rem;
+
+    /* Interaction & motion tokens */
+    --motion-fast: 120ms;
+    --motion-standard: 200ms;
+    --motion-slow: 320ms;
+    --motion-spring: 420ms;
+    --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+    --ease-emerge: cubic-bezier(0.21, 0.47, 0.32, 0.98);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    touch-action: manipulation;
+  }
+
+  :where(button, [role="button"], a, input, textarea, select, label) {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::placeholder {
+    transition: opacity 160ms ease;
+  }
+
+  :focus-visible {
+    outline: none;
   }
 }
 
@@ -160,4 +192,233 @@
 
 .glow-warning {
   --color: 255, 187, 100;
+}
+
+/* ---------- Interaction physics ---------- */
+/* Physical press: scale down on press, spring back on release */
+.pressable {
+  transition: transform var(--motion-fast) var(--ease-snappy),
+    background-color 160ms ease, border-color 160ms ease,
+    color 160ms ease, filter 160ms ease, box-shadow 160ms ease,
+    opacity 160ms ease;
+  will-change: transform;
+}
+.pressable:active {
+  transform: scale(0.97);
+}
+
+/* Card-level press (softer than buttons) */
+.pressable-card {
+  transition: transform var(--motion-standard) var(--ease-snappy),
+    box-shadow var(--motion-standard) ease, filter 200ms ease;
+  will-change: transform;
+}
+.pressable-card:active {
+  transform: scale(0.99);
+}
+
+@keyframes micro-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+}
+.micro-shake {
+  animation: micro-shake 260ms var(--ease-snappy);
+}
+
+@keyframes check-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  55% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.check-pop {
+  animation: check-pop 280ms var(--ease-spring);
+}
+
+@keyframes thumb-spring {
+  0% { transform: translateX(0) scale(1); }
+  45% { transform: translateX(calc(var(--switch-translate) * 1.04)) scale(1.02); }
+  100% { transform: translateX(var(--switch-translate)) scale(1); }
+}
+.thumb-spring {
+  animation: thumb-spring 380ms var(--ease-spring);
+}
+
+@keyframes sheet-rise {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+.sheet-rise {
+  animation: sheet-rise var(--motion-slow) var(--ease-ios);
+}
+
+/* Motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pressable, .pressable-card { transform: none !important; }
+}
+
+/* Modal entrance: settle from a slight zoom + drop, per interaction spec. */
+@keyframes modal-enter {
+  from { opacity: 0; transform: scale(0.98) translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.modal-enter {
+  animation: modal-enter var(--motion-slow) var(--ease-emerge) both;
+}
+
+/* Bottom sheet: spring up from below. */
+@keyframes sheet-pop {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.sheet-pop {
+  animation: sheet-pop var(--motion-spring) var(--ease-ios) both;
+}
+
+/* ---------- Scroll & spatial motion ---------- */
+
+/* Route-level page transition: gentle fade, no dead time. */
+/* NOTE: no `transform` here — any transform (even identity) on this wrapper
+   makes it the containing block for position:fixed descendants, breaking
+   the sticky bottom nav & header. */
+@keyframes page-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.page-enter {
+  animation: page-enter 260ms var(--ease-ios) both;
+}
+
+/* Scroll-linked reveal (driven by IntersectionObserver adding .is-revealed). */
+/* Reveal fires just before the element fully enters the viewport. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 12px));
+  transition: opacity var(--motion-slow) var(--ease-emerge),
+    transform var(--motion-slow) var(--ease-emerge);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (max-width: 640px) {
+  [data-reveal] { --reveal-y: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Thin scroll-progress bar (brand accent). Transform driven, 60fps. */
+.scroll-progress {
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress { display: none; }
+}
+
+/* Hero recede: content gently pulls back as the user scrolls away. */
+/* --hero-progress (0..1) is set by JS on the page shell. */
+.hero-recede {
+  transform: translateY(calc(-1 * var(--hero-progress, 0) * 20px))
+    scale(calc(1 - var(--hero-progress, 0) * 0.015));
+  opacity: calc(1 - var(--hero-progress, 0) * 0.05);
+  will-change: transform, opacity;
+}
+@media (max-width: 640px) {
+  .hero-recede {
+    transform: translateY(calc(-1 * var(--hero-progress, 0) * 8px))
+      scale(calc(1 - var(--hero-progress, 0) * 0.008));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-recede { transform: none; opacity: 1; }
+}
+
+/* Decorative parallax layers (5-20px drift, different speeds). */
+.blob-p1 { transform: translateY(calc(-1 * var(--hero-progress, 0) * 18px)); }
+.blob-p2 { transform: translateY(calc(var(--hero-progress, 0) * 10px)); }
+.blob-p3 { transform: translateY(calc(-1 * var(--hero-progress, 0) * 22px)); }
+@media (max-width: 640px) {
+  .blob-p1 { transform: translateY(calc(-1 * var(--hero-progress, 0) * 8px)); }
+  .blob-p2 { transform: translateY(calc(var(--hero-progress, 0) * 5px)); }
+  .blob-p3 { transform: translateY(calc(-1 * var(--hero-progress, 0) * 10px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blob-p1, .blob-p2, .blob-p3 { transform: none; }
+}
+
+/* ---------- Vote button (iOS-style) ---------- */
+.vote-btn {
+  position: relative;
+  transition: transform 180ms var(--ease-snappy),
+    background-color 200ms ease,
+    border-color 200ms ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.vote-btn:active {
+  transform: scale(0.86);
+}
+
+.vote-btn.vote-active {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.vote-thumb {
+  display: inline-flex;
+  transform-origin: center;
+  transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    fill 200ms ease;
+}
+
+.vote-btn.vote-pop .vote-thumb {
+  animation: vote-pop 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes vote-pop {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  30% {
+    transform: scale(1.55) rotate(-8deg);
+  }
+  55% {
+    transform: scale(0.92) rotate(4deg);
+  }
+  75% {
+    transform: scale(1.18) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* ---------- Form validation states ---------- */
+[aria-invalid="true"],
+[data-invalid="true"] {
+  border-color: hsl(var(--destructive) / 0.6) !important;
+  animation: micro-shake 260ms var(--ease-snappy);
+}
+
+.form-message-enter {
+  animation: fade-in 220ms var(--ease-emerge);
 }

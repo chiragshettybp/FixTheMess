@@ -1,13 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useHeroRecede, useScrolled } from '@/lib/scroll-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ArrowRight, CheckCircle, Star, Shield, Zap, Users, Clock, Globe, Target, TrendingUp, Award, Play, Menu, AlertTriangle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Shield, Zap, Users, Clock, Globe, Target, Award, AlertTriangle } from 'lucide-react';
 import logo from '@/assets/logo.png';
 const Join = () => {
   const navigate = useNavigate();
+  const scrolled = useScrolled(16);
+  const recedeRef = useHeroRecede<HTMLDivElement>(420);
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({
       behavior: 'smooth'
@@ -19,17 +22,21 @@ const Join = () => {
       
       {/* Animated flowing elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full flowing-gradient opacity-20 blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -left-20 w-60 h-60 rounded-full flowing-gradient opacity-30 blur-2xl animate-pulse" style={{
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full flowing-gradient opacity-20 blur-3xl animate-pulse blob-p1" />
+        <div className="absolute top-1/2 -left-20 w-60 h-60 rounded-full flowing-gradient opacity-30 blur-2xl animate-pulse blob-p2" style={{
         animationDelay: '2s'
       }} />
-        <div className="absolute bottom-20 right-1/3 w-40 h-40 rounded-full flowing-gradient opacity-25 blur-xl animate-pulse" style={{
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 rounded-full flowing-gradient opacity-25 blur-xl animate-pulse blob-p3" style={{
         animationDelay: '4s'
       }} />
       </div>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/90 border-b border-border/30 transition-all duration-300">
+      <header className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b transition-all duration-300 ${
+        scrolled
+          ? 'bg-background/95 border-border/60 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.7)]'
+          : 'bg-background/80 border-border/30'
+      }`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -123,7 +130,7 @@ const Join = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-32 pb-32">
+      <section ref={recedeRef} className="relative z-10 pt-32 pb-32 hero-recede">
         <div className="container mx-auto px-6">
           <div className="text-center space-y-8 max-w-4xl mx-auto">
             {/* Badge */}
@@ -178,7 +185,7 @@ const Join = () => {
             duration: 0.8,
             delay: 0.6
           }} className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={() => navigate('/auth')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-medium">Report Mess</Button>
+              <Button size="lg" onClick={() => navigate('/home')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-medium">Report Mess</Button>
               
             </motion.div>
 
@@ -510,7 +517,7 @@ const Join = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={() => navigate('/auth')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg">Report Mess</Button>
+              <Button size="lg" onClick={() => navigate('/home')} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg">Report Mess</Button>
               <Button variant="outline" size="lg" onClick={() => scrollToSection('features')} className="px-8 py-6 text-lg border-border/50">
                 More about our features <ArrowRight className="ml-2 h-5 w-5" />
               </Button>

@@ -15,7 +15,6 @@ import {
   AlertCircle,
   AlertTriangle,
   Info,
-  CheckCircle2,
   Eye,
   Check
 } from 'lucide-react';

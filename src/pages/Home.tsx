@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useGuestId } from "@/hooks/useGuestId";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { ThumbsUp, MapPin, Clock, Filter, Search, ChevronRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Reveal } from "@/lib/scroll-motion";
+import { toggleVote } from "@/lib/vote";
 
 // Types
 interface ReportRow {
@@ -49,10 +52,15 @@ export default function Home() {
   const {
     user
   } = useAuth();
+  const { getGuestId } = useGuestId();
   const navigate = useNavigate();
   const {
     toast
   } = useToast();
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   // SEO
   useEffect(() => {
@@ -165,16 +173,21 @@ export default function Home() {
 
       // User votes (to highlight button)
       let votedSet = new Set<string>();
-      if (user && reportIds.length) {
+      if (userRef.current && reportIds.length) {
         const {
           data: userVotes
-        } = await supabase.from("votes").select("report_id").eq("user_id", user.id).in("report_id", reportIds);
+        } = await supabase.from("votes").select("report_id").eq("user_id", userRef.current.id).in("report_id", reportIds);
         votedSet = new Set((userVotes || []).map(v => v.report_id));
+      } else if (reportIds.length) {
+        const {
+          data: guestVotes
+        } = await supabase.from("votes").select("report_id").eq("anon_id", getGuestId()).in("report_id", reportIds);
+        votedSet = new Set((guestVotes || []).map((v: any) => v.report_id));
       }
       const enriched: ReportWithExtras[] = rows.map(r => ({
         ...r,
         vote_count: countMap.get(r.id) || 0,
-        user_has_voted: user ? votedSet.has(r.id) : false,
+        user_has_voted: votedSet.has(r.id),
         profile: r.user_id ? profileMap.get(r.user_id) || null : null
       }));
       setReports(prev => replace ? enriched : [...prev, ...enriched]);
@@ -193,36 +206,49 @@ export default function Home() {
   };
 
   // Upvote
+  const [votedPulse, setVotedPulse] = useState<string | null>(null);
+  const [pendingVote, setPendingVote] = useState<Record<string, boolean>>({});
   const handleUpvote = async (reportId: string, current: boolean) => {
-    if (!user) {
-      toast({
-        title: "Login required",
-        description: "Please sign in to vote",
-        variant: "destructive"
-      });
-      return;
-    }
+    const currentUser = userRef.current;
+    const target = !current;
+    // Optimistic update
+    setPendingVote(prev => ({ ...prev, [reportId]: true }));
+    setVotedPulse(null);
+    requestAnimationFrame(() => setVotedPulse(reportId));
+    setReports(prev =>
+      prev.map(r =>
+        r.id === reportId
+          ? { ...r, user_has_voted: target, vote_count: (r.vote_count || 0) + (target ? 1 : -1) }
+          : r
+      )
+    );
+
     try {
-      if (current) {
-        const {
-          error
-        } = await supabase.from("votes").delete().eq("report_id", reportId).eq("user_id", user.id);
-        if (error) throw error;
-      } else {
-        const {
-          error
-        } = await supabase.from("votes").insert({
-          report_id: reportId,
-          user_id: user.id
-        });
-        if (error) throw error;
-      }
+      const { error } = await toggleVote(reportId, current, currentUser, getGuestId);
+      if (error) throw error;
+      setVotedPulse(reportId);
+      setTimeout(() => setVotedPulse(null), 600);
+      resetAndFetch();
     } catch (e) {
       console.error(e);
+      // Rollback optimistic update
+      setReports(prev =>
+        prev.map(r =>
+          r.id === reportId
+            ? { ...r, user_has_voted: current, vote_count: (r.vote_count || 0) + (target ? -1 : 1) }
+            : r
+        )
+      );
       toast({
         title: "Error",
         description: "Failed to update vote",
         variant: "destructive"
+      });
+    } finally {
+      setPendingVote(prev => {
+        const next = { ...prev };
+        delete next[reportId];
+        return next;
       });
     }
   };
@@ -316,7 +342,7 @@ export default function Home() {
     r
   }: {
     r: ReportWithExtras;
-  }) => <Card className="hover:shadow-md transition-shadow">
+  }) => <Card className="hover:shadow-md transition-shadow h-full">
       <div className="aspect-video relative overflow-hidden rounded-t-lg">
         <img src={r.media_url} alt={r.title} loading="lazy" className="w-full h-full object-cover" onError={e => {
         (e.currentTarget as HTMLImageElement).src = "/placeholder.svg";
@@ -349,8 +375,8 @@ export default function Home() {
 
         <div className="flex items-center justify-between">
           <Badge variant="outline">{r.issue_type}</Badge>
-          <Button variant={r.user_has_voted ? "default" : "outline"} size="sm" onClick={() => handleUpvote(r.id, r.user_has_voted)} className="flex items-center gap-1">
-            <ThumbsUp className="w-4 h-4" /> {r.vote_count}
+          <Button variant={r.user_has_voted ? "default" : "outline"} size="sm" disabled={!!pendingVote[r.id]} onClick={() => handleUpvote(r.id, r.user_has_voted)} className={`flex items-center gap-1 vote-btn ${votedPulse === r.id ? 'vote-pop' : ''} ${r.user_has_voted ? 'vote-active' : ''}`}>
+            <ThumbsUp className={`w-4 h-4 vote-thumb ${r.user_has_voted ? 'fill-current' : ''}`} /> {r.vote_count}
           </Button>
         </div>
 
@@ -407,7 +433,11 @@ export default function Home() {
 
           {/* Latest feed */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-            {reports.map(r => <ReportCard key={r.id} r={r} />)}
+            {reports.map((r, index) => (
+              <Reveal key={r.id} delay={index * 50} className="h-full">
+                <ReportCard r={r} />
+              </Reveal>
+            ))}
           </div>
 
           {/* Infinite scroll sentinel */}
@@ -420,7 +450,7 @@ export default function Home() {
 
           {/* Mobile CTA button */}
           <div className="md:hidden">
-            <Button className="w-full mt-4" size="lg" onClick={() => navigate("/report/new")}>Report an Issue</Button>
+            <Button className="w-full mt-4" size="lg" onClick={() => navigate(user ? "/report/new" : "/home")}>Report an Issue</Button>
           </div>
         </div>
 

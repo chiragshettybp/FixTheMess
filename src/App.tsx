@@ -4,11 +4,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { PageTransition, ScrollProgress } from "@/lib/scroll-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { GovProtectedRoute } from "@/components/auth/GovProtectedRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
-import Index from "./pages/Index";
+import { SuperAdminLayout } from "@/components/layout/SuperAdminLayout";
 import Auth from "./pages/Auth";
 import GovAuth from "./pages/GovAuth";
 import GovPanel from "./pages/GovPanel";
@@ -28,7 +29,6 @@ import SuperadminDashboard from "./pages/SuperadminDashboard";
 import SuperadminReports from "./pages/SuperadminReports";
 import SuperadminReportEdit from "./pages/SuperadminReportEdit";
 import SuperadminViewReport from "./pages/SuperadminViewReport";
-import ViewReport from "./pages/ViewReport";
 import UploadCivicModule from "./pages/UploadCivicModule";
 import Home from "./pages/Home";
 import UserProfile from "./pages/UserProfile";
@@ -59,7 +59,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
+          <ScrollProgress />
+          <PageTransition>
+            <Routes>
             <Route path="/" element={<Join />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/gov-auth" element={<GovAuth />} />
@@ -74,53 +76,39 @@ const App = () => (
               </GovProtectedRoute>
             } />
             <Route path="/report" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ReportIssue />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <ReportIssue />
+              </AppLayout>
             } />
             <Route path="/report/new" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ReportIssue />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <ReportIssue />
+              </AppLayout>
             } />
             <Route path="/feed" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Feed />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <Feed />
+              </AppLayout>
             } />
             <Route path="/reports" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Feed />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <Feed />
+              </AppLayout>
             } />
             <Route path="/home" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Home />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <Home />
+              </AppLayout>
             } />
             <Route path="/report/:id" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <IssueDetail />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <IssueDetail />
+              </AppLayout>
             } />
             <Route path="/issue/:id" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <IssueDetail />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <IssueDetail />
+              </AppLayout>
             } />
             <Route path="/share/:id" element={
               <ProtectedRoute>
@@ -133,21 +121,17 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/map" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <MapView />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <MapView />
+              </AppLayout>
             } />
             <Route path="/shame" element={
-              <ProtectedRoute>
-                <AppLayout>
+              <AppLayout>
                   <div className="container mx-auto px-4 py-8">
                     <h1 className="text-3xl font-bold">Shame Board</h1>
                     <p className="text-muted-foreground mt-2">Public accountability board coming soon...</p>
                   </div>
-                </AppLayout>
-              </ProtectedRoute>
+              </AppLayout>
             } />
             <Route path="/my-reports" element={
               <ProtectedRoute>
@@ -201,109 +185,142 @@ const App = () => (
             <Route path="/superadmin/login" element={<SuperadminLogin />} />
             <Route path="/superadmin" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminDashboard />
+                <SuperAdminLayout>
+                  <SuperadminDashboard />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/reports" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminReports />
+                <SuperAdminLayout>
+                  <SuperadminReports />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/report-edit/:id" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminReportEdit />
+                <SuperAdminLayout>
+                  <SuperadminReportEdit />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/view-report/:id" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminViewReport />
+                <SuperAdminLayout>
+                  <SuperadminViewReport />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/upload-module" element={
               <ProtectedRoute requiredRole="superadmin">
-                <UploadCivicModule />
+                <SuperAdminLayout>
+                  <UploadCivicModule />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/user/:id" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <UserProfile />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <UserProfile />
+              </AppLayout>
             } />
             <Route path="/top-reporters" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <TopReporters />
-                </AppLayout>
-              </ProtectedRoute>
+              <AppLayout>
+                <TopReporters />
+              </AppLayout>
             } />
             <Route path="/superadmin/user" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminUsers />
+                <SuperAdminLayout>
+                  <SuperadminUsers />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/users" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminUsers />
+                <SuperAdminLayout>
+                  <SuperadminUsers />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/edit-user/:id" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminEditUser />
+                <SuperAdminLayout>
+                  <SuperadminEditUser />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/view-user/:id" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminViewUser />
+                <SuperAdminLayout>
+                  <SuperadminViewUser />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/govuser" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminGovUsers />
+                <SuperAdminLayout>
+                  <SuperadminGovUsers />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/edit-govuser/:id" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminEditGovUser />
+                <SuperAdminLayout>
+                  <SuperadminEditGovUser />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/view-govuser/:id" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminViewGovUser />
+                <SuperAdminLayout>
+                  <SuperadminViewGovUser />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/flag-reports" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminFlagReports />
+                <SuperAdminLayout>
+                  <SuperadminFlagReports />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/view-flag-report/:id" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminViewFlagReport />
+                <SuperAdminLayout>
+                  <SuperadminViewFlagReport />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/settings" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminSettings />
+                <SuperAdminLayout>
+                  <SuperadminSettings />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/app-analytics" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminAppAnalytics />
+                <SuperAdminLayout>
+                  <SuperadminAppAnalytics />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/system-health" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminSystemHealth />
+                <SuperAdminLayout>
+                  <SuperadminSystemHealth />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
             <Route path="/superadmin/notifications" element={
               <ProtectedRoute requiredRole="superadmin">
-                <SuperadminNotifications />
+                <SuperAdminLayout>
+                  <SuperadminNotifications />
+                </SuperAdminLayout>
               </ProtectedRoute>
             } />
           </Routes>
+          </PageTransition>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

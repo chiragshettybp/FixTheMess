@@ -16,7 +16,8 @@ import { cn } from '@/lib/utils';
 export const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, loading } = useAuth();
+  const { profile, user, loading } = useAuth();
+  const isGuest = !user;
 
   // Don't show bottom nav on auth pages
   if (location.pathname === '/auth') {
@@ -68,7 +69,7 @@ export const BottomNav = () => {
       label: 'Reports',
       icon: User,
       path: '/my-reports',
-      show: true,
+      show: !isGuest,
     },
     // Admin-only items
     {
@@ -86,6 +87,10 @@ export const BottomNav = () => {
   ].filter(item => item.show);
 
   const handleNavigation = (path: string) => {
+    if (isGuest && path === '/report') {
+      navigate('/home');
+      return;
+    }
     navigate(path);
   };
 
@@ -99,10 +104,10 @@ export const BottomNav = () => {
   return (
     <>
       {/* Spacer to prevent content from being hidden behind fixed nav */}
-      <div className="h-20 md:h-0" />
+      <div className="h-[calc(5rem+env(safe-area-inset-bottom))]" />
       
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-gray-800 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-gray-800 pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center py-2 px-4 max-w-md mx-auto">
           {navItems.map((item) => {
             const isCurrentActive = isActive(item.path);

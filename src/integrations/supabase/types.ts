@@ -1133,22 +1133,25 @@ export type Database = {
       }
       votes: {
         Row: {
+          anon_id?: string | null
           created_at: string
           id: string
           report_id: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          anon_id?: string | null
           created_at?: string
           id?: string
           report_id: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          anon_id?: string | null
           created_at?: string
           id?: string
           report_id?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {

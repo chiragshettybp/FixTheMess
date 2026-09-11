@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { AlertTriangle, Eye, Clock, CheckCircle, XCircle, Ban, Flag, User, FileText, Calendar, Image } from 'lucide-react';
+import { AlertTriangle, Eye, Clock, CheckCircle, XCircle, Ban, Flag, User, FileText, Calendar } from 'lucide-react';
 import { FlagReport, ModerationAction, useFlagReports } from '@/hooks/useFlagReports';
 import { useToast } from '@/hooks/use-toast';
 

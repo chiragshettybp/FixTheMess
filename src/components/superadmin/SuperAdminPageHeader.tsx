@@ -10,13 +10,9 @@ import {
   Bell, 
   Users, 
   FileText, 
-  AlertTriangle, 
-  Shield, 
   Flag,
   Settings,
   Activity,
-  Upload,
-  TrendingUp,
   BarChart3,
   RefreshCw
 } from 'lucide-react';

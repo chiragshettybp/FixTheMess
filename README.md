@@ -27,4 +27,3 @@ Our long-term goal is to create a platform where every citizen can actively impr
 
 Together, we can fix our cities—one report at a time.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4d2de453-c527-42d7-960d-21e41da7b69d) and start prompting.

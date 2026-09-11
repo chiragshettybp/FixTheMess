@@ -10,6 +10,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { GovProtectedRoute } from "@/components/auth/GovProtectedRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SuperAdminLayout } from "@/components/layout/SuperAdminLayout";
+import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import GovAuth from "./pages/GovAuth";
 import GovPanel from "./pages/GovPanel";
@@ -319,6 +320,7 @@ const App = () => (
                 </SuperAdminLayout>
               </ProtectedRoute>
             } />
+            <Route path="*" element={<NotFound />} />
           </Routes>
           </PageTransition>
         </AuthProvider>
